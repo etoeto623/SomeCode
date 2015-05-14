@@ -17,6 +17,8 @@
         blinkDuration: 300, // 光标闪烁速度 毫秒
         fontColor: "#777",
         promptColor: "#666",
+        magicEffect: false,
+        randomColor: false,
         data: []
     }
 
@@ -31,7 +33,6 @@
             togglePrompt();
             typeSentence( _settings.data, 0, 0 );
         });
-
     }
 
     function typeSentence( sentences, len, idx ){
@@ -42,16 +43,23 @@
             breakLine();
             beginNewLine( idx+1 );
             typeSentence( sentences, 0, idx+1 );
+        }else{
+            _timeoutHolder = setTimeout(function(){
+                typeSentence( sentences, len+1, idx );
+            },_settings.typeDuration);
         }
 
         if( len == 0 && idx == 0 ){
             beginNewLine( 0 );
         }
 
-        $("#"+_sentenceid+idx).html( sentences[idx].substr(0, len) );
-        _intervalHolder = setTimeout(function(){
-            typeSentence( sentences, len+1, idx );
-        },_settings.typeDuration);
+        var randColorStr = _settings.randomColor ? "color:#"+getRandColor()+";" : "";
+        if(_settings.magicEffect){
+            $("#"+_sentenceid+idx).append($("<span style='"+randColorStr+"' class='typer_singleunit'>"+sentences[idx].charAt(len)+"</span>"));
+        }else{
+            $("#"+_sentenceid+idx).html( sentences[idx].substr(0, len) );
+        }
+
     }
 
     function togglePrompt(){
@@ -80,6 +88,16 @@
     function getRandStr(){
         var rand = Math.ceil( Math.random()*999999999999 ) + 1000000000000;
         return rand.toString(16);
+    }
+
+    function getRandColor(){
+        var cnt = 0;
+        var result = "";
+        while( cnt < 6 ){
+            result += Math.floor((Math.random()-0.001)*16).toString(16);
+            cnt ++;
+        }
+        return result;
     }
 
 })(jQuery)
