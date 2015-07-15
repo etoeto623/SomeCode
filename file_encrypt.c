@@ -30,16 +30,16 @@ int main(){
 		system("cls");
 		
 		switch(action){
-			case 'a':
-			case 'A':
+			case 'e':
+			case 'E':
 				doEncrypt();
 				break;
-			case 'b':
-			case 'B':
+			case 'd':
+			case 'D':
 				doDecrypt();
 				break;
-			case 'z':
-			case 'Z':
+			case 'q':
+			case 'Q':
 				exit(0);
 			default:
 				returnMenu("没有相应菜单！");
@@ -50,12 +50,12 @@ int main(){
 
 // 打印主菜单
 void printMenu(){
-    printf("******************* 文本加密解密软件 ******************\n");
+    printf("******************* 文件加密解密工具 ******************\n");
     printf("*                                                     *\n");
     printf("*      请从下面的菜单中选择你要进行的操作：           *\n");
-    printf("*      a. 文件加密                                    *\n");
-    printf("*      b. 文件解密                                    *\n");
-    printf("*      z. 退出系统                                    *\n");
+    printf("*      e. 文件加密                                    *\n");
+    printf("*      d. 文件解密                                    *\n");
+    printf("*      q. 退出系统                                    *\n");
     printf("*                                                     *\n");
     printf("*******************************************************\n");
 }
@@ -64,7 +64,6 @@ void printMenu(){
 // msg 为提示语
 void returnMenu(char *msg){
 	fflush(stdin);
-    // system("cls");
     printf("\n%s\n", msg);
     printf("按任意键回到主菜单...\n");
     getch();
@@ -93,13 +92,14 @@ int validPassword(){
 }
 
 void doEncrypt(){
-	char sourceFile[2],targetFile[2], *secretKey;
+	char *sourceFile,*targetFile, *secretKey;
 	printf("输入待加密文件名：");
+	sourceFile = malloc(sizeof(char));
 	scanf("%s",sourceFile);
 	printf("输入加密输出文件名：");
+	targetFile = malloc(sizeof(char));
 	scanf("%s",targetFile);
 	printf("输入秘钥：");
-	// scanf("%s",secretKey);
 	secretKey = inputPwd();
 	int result = encryptFile( sourceFile, targetFile, secretKey );
 	if( result == 0 ){
@@ -110,10 +110,12 @@ void doEncrypt(){
 }
 
 void doDecrypt(){
-	char sourceFile[2],targetFile[2],*secretKey;
+	char *sourceFile,*targetFile,*secretKey;
 	printf("输入待解密文件名：");
+	sourceFile = malloc(sizeof(char));
 	scanf("%s",sourceFile);
 	printf("输入解密输出文件名：");
+	targetFile = malloc(sizeof(char));
 	scanf("%s",targetFile);
 	printf("输入秘钥：");
 	secretKey = inputPwd();
@@ -133,6 +135,10 @@ int encryptFile( char *sourceFile, char *targetFile, char* secretKey ){
 		return 1;
 	}
 	FILE *tf = fopen( targetFile,"wb" );
+	if( tf == NULL ){
+		printf("\n目标文件不存在！\n");
+		return 1;
+	}
 	
 	int keyLen = strlen( secretKey );
 	char buf[keyLen+1];
@@ -159,6 +165,7 @@ char* inputPwd(){
 	while(1){
 		buf = getch();
 		if( buf == 13 ){
+			pwd[i] = '\0';
 			break;
 		}
 		pwd[i] = buf;
